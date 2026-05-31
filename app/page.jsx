@@ -2,13 +2,31 @@
 
 import { useState } from 'react'
 
-export default function AntiRaidDashboard() {
+const Dashboard = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [page, setPage] = useState('inicio')
+  const [selectedServer, setSelectedServer] = useState(null)
+  const [user, setUser] = useState(null)
+
+  // Estadísticas actualizadas
+  const stats = {
+    servers: 53,
+    users: '4,390',
+    ping: '32ms'
+  }
+
   const botStatus = {
     name: 'SBK AntiRaid',
     connected: true,
     ping: '32ms'
   }
+
+  // Servidores de ejemplo
+  const userServers = [
+    { id: '1', name: 'Mi Servidor 1', icon: '🎮' },
+    { id: '2', name: 'Mi Servidor 2', icon: '🎯' },
+    { id: '3', name: 'Mi Servidor 3', icon: '⚡' },
+  ]
 
   const blockedLinks = [
     'discord.gg/',
@@ -16,9 +34,114 @@ export default function AntiRaidDashboard() {
     't.me/'
   ]
 
+  // Login con Discord
+  const handleDiscordLogin = () => {
+    // Simulación de login
+    setUser({
+      username: 'Usuario#0001',
+      avatar: '👤'
+    })
+    setIsLoggedIn(true)
+  }
+
+  // Seleccionar servidor
+  const handleSelectServer = (server) => {
+    setSelectedServer(server)
+    setPage('inicio')
+  }
+
+  // Logout
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    setSelectedServer(null)
+    setUser(null)
+  }
+
+  // Pantalla de Login
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-purple-950 to-zinc-950 flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+            <div className="text-center mb-8">
+              <h1 className="text-5xl font-black mb-2">SBK Dashboard</h1>
+              <p className="text-zinc-400">antiraidsbk.vercel.app</p>
+            </div>
+
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 mb-8 text-center">
+              <p className="text-white font-bold mb-4">¡Bienvenido!</p>
+              <p className="text-white/80 text-sm">Verifica tu cuenta de Discord para continuar</p>
+            </div>
+
+            <button
+              onClick={handleDiscordLogin}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-2xl transition flex items-center justify-center gap-3 mb-4"
+            >
+              <span className="text-2xl">🎮</span>
+              Iniciar sesión con Discord
+            </button>
+
+            <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
+              <p className="text-xs text-zinc-400 text-center">
+                Al continuar, aceptas nuestros términos de servicio y política de privacidad.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Pantalla de selección de servidor
+  if (!selectedServer) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-purple-950 to-zinc-950 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-black mb-2">Selecciona un servidor</h1>
+              <p className="text-zinc-400">Elige en cuál servidor deseas configurar SBK AntiRaid</p>
+            </div>
+
+            <div className="flex items-center justify-between mb-8 bg-zinc-800/50 rounded-xl p-4">
+              <div>
+                <p className="text-white font-bold">{user.username}</p>
+                <p className="text-zinc-400 text-sm">Conectado a Discord</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition text-sm"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {userServers.map((server) => (
+                <button
+                  key={server.id}
+                  onClick={() => handleSelectServer(server)}
+                  className="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-indigo-500 rounded-2xl p-6 transition flex items-center gap-4 group"
+                >
+                  <div className="text-4xl">{server.icon}</div>
+                  <div className="flex-1 text-left">
+                    <p className="text-white font-bold text-lg">{server.name}</p>
+                    <p className="text-zinc-400 text-sm">ID: {server.id}</p>
+                  </div>
+                  <div className="text-2xl group-hover:translate-x-1 transition">→</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Dashboard principal
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex">
-      <aside className="w-72 bg-zinc-900 border-r border-zinc-800 p-6">
+      <aside className="w-72 bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col">
         <div className="mb-8">
           <div>
             <h1 className="text-3xl font-black">SBK Dashboard</h1>
@@ -42,9 +165,14 @@ export default function AntiRaidDashboard() {
               </div>
             </div>
           </div>
+
+          <div className="mt-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-4">
+            <p className="text-indigo-400 font-bold text-sm mb-1">Servidor Actual</p>
+            <p className="text-white font-bold">{selectedServer.name}</p>
+          </div>
         </div>
 
-        <nav className="space-y-3">
+        <nav className="space-y-3 flex-1">
           <button
             onClick={() => setPage('inicio')}
             className={`w-full text-left px-4 py-3 rounded-2xl transition ${page === 'inicio' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-zinc-800 hover:bg-zinc-700'}`}
@@ -80,6 +208,21 @@ export default function AntiRaidDashboard() {
             Logs
           </button>
         </nav>
+
+        <div className="border-t border-zinc-800 pt-4">
+          <button
+            onClick={() => setSelectedServer(null)}
+            className="w-full bg-zinc-800 hover:bg-zinc-700 px-4 py-3 rounded-2xl transition text-sm font-bold"
+          >
+            Cambiar Servidor
+          </button>
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-3 rounded-2xl transition text-sm font-bold mt-2"
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </aside>
 
       <main className="flex-1 p-8 overflow-auto">
@@ -122,17 +265,17 @@ export default function AntiRaidDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[28px] p-6 border border-zinc-700 shadow-xl">
                 <h2 className="text-zinc-400 mb-2">Servidores</h2>
-                <p className="text-5xl font-black">128</p>
+                <p className="text-5xl font-black">{stats.servers}</p>
               </div>
 
               <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[28px] p-6 border border-zinc-700 shadow-xl">
-                <h2 className="text-zinc-400 mb-2">Usuarios protegidos</h2>
-                <p className="text-5xl font-black">54K</p>
+                <h2 className="text-zinc-400 mb-2">Usuarios globales</h2>
+                <p className="text-5xl font-black">{stats.users}</p>
               </div>
 
               <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[28px] p-6 border border-zinc-700 shadow-xl">
                 <h2 className="text-zinc-400 mb-2">Latencia</h2>
-                <p className="text-5xl font-black">32ms</p>
+                <p className="text-5xl font-black">{stats.ping}</p>
               </div>
             </div>
 
@@ -353,3 +496,5 @@ export default function AntiRaidDashboard() {
     </div>
   )
 }
+
+export default Dashboard
